@@ -29,10 +29,16 @@ student_links.each do |link|
     student_work_company_name = flatiron_student.css('div.services').children.css('h4').text
     student_work_company_blurb = flatiron_student.css('div#ok-text-column-4 p').first.text.strip
 
-    student_code_school_link = flatiron_student.css('div.column.fourth').attr('href')
+    # coder links
+    coder_links_array = flatiron_student.css('div.column.fourth a').collect do |link|
+        link.attr('href')
+    end
+
+    # 
+
+    
 
 end
-
 
 
 
