@@ -1,6 +1,7 @@
 require 'nokogiri'
 require 'open-uri'
 require 'pry'
+
 #write a loop that does all of this for every student page
 #puts those student pages into a database
 
@@ -23,7 +24,7 @@ student_links.each do |link|
 
 
     # the student's name
-    student_name = flatiron_student.css("h4").text
+    student_name = flatiron_student.css("h4.ib_main_header").text
     students_hash[:"#{student_name}"] = {}
 
     # returns an array of the student's social links; it is quantity agnostic
@@ -85,20 +86,22 @@ student_links.each do |link|
     #     end
     # end
     
-    i += 1
-    if false
-        raise students_hash.inspect
-    end
-
+   
     rescue
     end
 
 
 end
+File.open('student_hash_file', 'w') { |file| 
 
-students_hash
+    file.write( 
 
-binding.pry
+        students_hash
+
+    )
+}
+
+
 
 
 
