@@ -98,6 +98,7 @@ end
 
 binding.pry
 File.open('student_hash_file', 'w') { |file| 
+<<<<<<< HEAD
 
     file.write( 
 
@@ -107,10 +108,12 @@ File.open('student_hash_file', 'w') { |file|
 }
 
 
+=======
+>>>>>>> 14e66c76fbdd774963b7f7ece36ad92a6e9a2dbe
 
+    file.write( 
 
+        students_hash
 
-
-
-
-
+    )
+}
