@@ -41,12 +41,15 @@ student_links.each do |link|
 
     # education
     students_hash[:"#{student_name}"][:education] = flatiron_student.css('div.services').children.css("li").collect do |school|
-        school.text
+        school.text.strip
     end.join(', ')
 
     # work
-    students_hash[:"#{student_name}"][:work_company] = flatiron_student.css('div.services').children.css('h4').text
-    students_hash[:"#{student_name}"][:work_blurb] = flatiron_student.css('div#ok-text-column-4 p').first.text.strip
+    students_hash[:"#{student_name}"][:work_company] = flatiron_student.css('div#ok-text-column-4 h4').collect do |company|
+        company.text
+    end
+
+    students_hash[:"#{student_name}"][:work_blurb] = flatiron_student.css('div#ok-text-column-4 h4 + p').text.strip
 
     # coder links
     students_hash[:"#{student_name}"][:coder_links] = flatiron_student.css('div.column.fourth a').collect do |link|
@@ -92,6 +95,8 @@ student_links.each do |link|
 
 
 end
+
+binding.pry
 File.open('student_hash_file', 'w') { |file| 
 
     file.write( 
