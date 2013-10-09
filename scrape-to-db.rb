@@ -63,7 +63,7 @@ puts "SQL Prepared!"
 
 students_hash.each do |student_name, student_hash|
   s = ["#{student_name}", 
-       "#{student_hash[:social_links]}",
+       "#{student_hash[:student_social_links]}",
        "#{student_hash[:quote]}",
        "#{student_hash[:biography]}",
        "#{student_hash[:education]}",
