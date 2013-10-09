@@ -5,7 +5,7 @@ require 'pry'
 #write a loop that does all of this for every student page
 #puts those student pages into a database
 
-
+def scrape
 student_links = Nokogiri::HTML(open "http://students.flatironschool.com/index.html").css('h3 a').collect do |student|
     student.attr('href')
 end
@@ -16,6 +16,7 @@ end
 students_hash = {}
 i = 0
 student_links.each do |link|
+    puts "scraping"
 
     begin 
 
@@ -31,7 +32,7 @@ student_links.each do |link|
     student_socials = flatiron_student.css("div.social-icons")
     students_hash[:"#{student_name}"][:student_social_links] = student_socials.css('a').collect do |social|
          social.attr('href')
-    end
+    end.join(" | ")
 
     # student quote
     students_hash[:"#{student_name}"][:quote] = flatiron_student.css("h3").first.text
@@ -54,7 +55,7 @@ student_links.each do |link|
     # coder links
     students_hash[:"#{student_name}"][:coder_links] = flatiron_student.css('div.column.fourth a').collect do |link|
         link.attr('href')
-    end
+    end.join(" | ")
 
     # blogs
     students_hash[:"#{student_name}"][:blogs] = flatiron_student.css('div#ok-text-column-3 div + p').first.css('a').collect do |link|
@@ -63,9 +64,9 @@ student_links.each do |link|
     end
 
     # favorites websites
-    students_hash[:"#{student_name}"][:favorite_sites] = flatiron_student.css('div#ok-text-column-3 div + p').last.css('a').collect do |link|
+    students_hash[:"#{student_name}"][:fav_websites] = flatiron_student.css('div#ok-text-column-3 div + p').last.css('a').collect do |link|
         link.attr('href')
-    end
+    end.join(" | ")
 
     # personal projects
     students_hash[:"#{student_name}"][:personal_projects_links] = flatiron_student.css('div#ok-text-column-4 div + p').first.css('a').collect do |link|
@@ -77,43 +78,15 @@ student_links.each do |link|
     students_hash[:"#{student_name}"][:flatiron_projects_text] = flatiron_student.css('div#ok-text-column-4 p')[2].text.strip
 
     #favorite cities
-    students_hash[:"#{student_name}"][:favorite_cities] = flatiron_student.css('div#ok-text-column-2 p')[2].css('a').collect do |cities|
+    students_hash[:"#{student_name}"][:fave_cities] = flatiron_student.css('div#ok-text-column-2 p')[2].css('a').collect do |cities|
         cities.text
     end
-
-
-
-    # biography = flatiron_student.css('h3').each do |x|
-    #     if x.text == 'Biography'
-    #         puts x.parent.
-    #     end
-    # end
-    
    
     rescue
     end
 
 
 end
+students_hash
+end
 
-binding.pry
-File.open('student_hash_file', 'w') { |file| 
-<<<<<<< HEAD
-
-    file.write( 
-
-        students_hash
-
-    )
-}
-
-
-=======
->>>>>>> 14e66c76fbdd774963b7f7ece36ad92a6e9a2dbe
-
-    file.write( 
-
-        students_hash
-
-    )
-}

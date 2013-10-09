@@ -1,49 +1,85 @@
 require "open-uri"
 require "Nokogiri"
 require "sqlite3"
+require_relative "student-scrape.rb"
+require 'pry'
 
 # this should be in the scraper file
 # students_array = Nokogiri::HTML(open(profile_url))
+
 
 # Open a database
 def create_db
   SQLite3::Database.new "flatiron.db"
 end
 
-db = create_db
 
 def create_table(database)
   rows = database.execute <<-whatever
-    CREATE TABLE students (
+    CREATE TABLE IF NOT EXISTS students (
     id INTEGER PRIMARY KEY,
     name TEXT,
     social_links TEXT,
     quote TEXT,
     biography TEXT,
     education TEXT,
-    work TEXT,
+    work_company TEXT,
+    work_blurb TEXT,
     coder_links TEXT,
     blogs TEXT,
     fav_websites TEXT,
-    personal_projects TEXT,
+    personal_projects_links TEXT,
+    personal_projects_text TEXT,
     flatiron_projects TEXT,
     fave_cities TEXT
     );
   whatever
 end
 
+db = create_db
 create_table(db)
+# scrape
+students_hash = scrape
+binding.pry
 
-def parse_profile(student_hash, db)
-  # Insert data
-  student_hash.each do |key, value|
-    db.execute "insert into students (#{key}) values (?)", value
-  end
+ins = db.prepare('INSERT INTO students
+      (name, 
+      social_links,
+      quote,
+      biography,
+      education,
+      work_company,
+      work_blurb,
+      coder_links,
+      blogs,
+      fav_websites,
+      personal_projects_links,
+      personal_projects_text,
+      flatiron_projects,
+      fave_cities
+      )
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+puts "SQL Prepared!"
+
+students_hash.each do |student_name, student_hash|
+  s = ["#{student_name}", 
+       "#{student_hash[:social_links]}",
+       "#{student_hash[:quote]}",
+       "#{student_hash[:biography]}",
+       "#{student_hash[:education]}",
+       "#{student_hash[:work_company]}",
+       "#{student_hash[:work_blurb]}",
+       "#{student_hash[:coder_links]}",
+       "#{student_hash[:blogs]}",
+       "#{student_hash[:fav_websites]}",
+       "#{student_hash[:personal_projects_links]}",
+       "#{student_hash[:personal_projects_text]}",
+       "#{student_hash[:flatiron_projects_text]}",
+       "#{student_hash[:fave_cities]}"]
+  ins.execute(*s)
+
+  puts "loaded!"
+
 end
 
-students_array = {"Vivian Shangxuan Zhang" => {
-  :student_social_links=>["https://twitter.com/vivian__zhang", "http://www.linkedin.com/in/shangxuanzhang", "https://github.com/casunlight", "https://www.facebook.com/shangxuan.zhang"], :quote=>"\"It is the age of Data Mining. Embrace it with all heart.\" -- Vivian Zhang Said this.", :biography=>"I was born and raised up in Shanghai and came to US for college. I stuided and worked in Sillicon Valley, Long Island, Rhode Island, and now happily study and work in Manhattan.", :education=>"Stony Brook University, San Jose State University", :work_company=>"", :work_blurb=>"I am Co-founder and CTO of a statistical consulting firm--Supstat Inc. Our services include consulting and training on data mining, statistical computing  and visualization. We all program in R. Our lead data scientist is ranked top 0.1% by Kaggle.", :coder_links=>["http://www.github.com/casunlight", "http://teamtreehouse.com/vivianzhang", "http://www.codeschool.com/users/shangxuan", "https://coderwall.com/shangxuan"], :blogs=>["http://www.supstat.com/en", "http://www.meetup.com/nyc-open-data", "http://www.statcodebank.com/"], :favorite_sites=>["#", "#", "#", "#"], :personal_projects_links=>[], :personal_projects_text=>"I run a very popular meetup group--NYC Open Data. The goal of the group is to use data and visualizations to tell stories about the NYC and develop individual's skill using open data as examples. The group hosts excellent tech and policy talks and gathers devoted programmers,statisticians and data scientists to teach and help each other to develop data mining and visualization skills.", :flatiron_projects_text=>"I plan to upgrade www.supstat.com and make www.nycopendata.com home of open data hack projects, developer network, repository of workshops material, and open data providers.", :favorite_cities=>["Shanghai", "London", "Hawaii", "New York"]}}
 
-students_array.each do |student|
-  parse_profile(student, db)
-end
